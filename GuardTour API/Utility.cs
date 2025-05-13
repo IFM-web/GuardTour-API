@@ -13,16 +13,9 @@ namespace GuardTour_API
 
     public class db_Utility
     {
-        ClsUtility util = new ClsUtility();
-
-
-  
+        ClsUtility util = new ClsUtility();  
 
         public readonly string constring = ConnectDB.ConnectionString;
-
-
-
-
 
 
 		public string execQuery(string query)

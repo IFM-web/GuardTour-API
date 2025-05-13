@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Net;
-
 namespace GuardTour_API.Controllers
 {
     [Route("API/[controller]")]
@@ -18,8 +17,8 @@ namespace GuardTour_API.Controllers
         ResponseMassage Response;
 
         #region ForgetPassword
-        [Route("ForgetPassword")]
-        [HttpPost]
+      
+        [HttpPost("ForgetPassword")]
 
         public ResponseMassage ForgetPassword([FromForm] ForgetPassword obj )
         {
@@ -189,11 +188,11 @@ namespace GuardTour_API.Controllers
 
         //#endregion
 
-        #region GetAllPost
+        #region GetRoutePost
         [HttpGet("GetRoutePost")]
-        public IActionResult GetRoutePost(string EmployeeId, string SiteId, string CompanyId, string BranchId)
+        public IActionResult GetRoutePost(string EmployeeId, string RouteCode, string CompanyId, string BranchId)
         {
-            var ds = util.Fill("exec API_Usp_GetPost @Action='All',@EmpId='" + EmployeeId + "',@SiteId='" + SiteId + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "'");
+            var ds = util.Fill("exec API_Usp_GetPost @Action='All',@EmpId='" + EmployeeId + "',@RouteId='" + RouteCode + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "'");
             if (ds.Tables[0].Rows.Count != 0)
             {
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -204,11 +203,13 @@ namespace GuardTour_API.Controllers
 
             }
         }
+        #endregion
 
-        [HttpGet("GetPost")]
-        public IActionResult GetPost(string PostId, string EmployeeId, string SiteId, string CompanyId, string BranchId)
+        #region ValidatePostId
+        [HttpGet("ValidatePostId")]
+        public IActionResult GetPost(string PostId, string RouteId, string EmployeeId, string CompanyId, string BranchId)
         {
-            var ds = util.Fill("exec API_Usp_GetPost @Action='Single',@EmpId='" + EmployeeId + "',@SiteId='" + SiteId + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@PostId='" + PostId + "'");
+            var ds = util.Fill("exec API_Usp_GetPost @Action='Single',@EmpId='" + EmployeeId + "',@RouteId='" + RouteId + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@PostId='" + PostId + "'");
 
             if (ds.Tables[0].Rows.Count != 0)
             {
@@ -226,6 +227,52 @@ namespace GuardTour_API.Controllers
 
         #endregion
 
+
+        #region CheckGeoLocation
+
+        [HttpGet("CheckGeoLocation")]
+        public IActionResult CheckGeolocatoin(string PostId, float Latitude, float Longitude)
+        {
+            var ds = util.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "' ");
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                return Ok(new { data = JsonConvert.SerializeObject(ds.Tables[0]), Massage = "Success", StatusCode = HttpStatusCode.OK });
+            }
+            else
+            {
+                return NotFound(new { data = JsonConvert.SerializeObject(ds.Tables[0]), Massage = "Not Found !", StatusCode = HttpStatusCode.NotFound });
+            }
+        }
+        #endregion
+
+        #region InsertTour
+
+        [HttpPost("InsertTour")]
+        public IActionResult  InsertTour([FromForm] InsertTour obj)
+        {
+            try
+            {
+
+
+                string msg = util.execQuery(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.PostId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}'");
+               if(msg== "Successfull")
+                    return Ok(new { Message = msg, StatusCode = HttpStatusCode.Created });
+               else
+                    return BadRequest(new { Message = msg, StatusCode = HttpStatusCode.ExpectationFailed });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message, StatusCode = HttpStatusCode.InternalServerError });
+            }
+
+
+        }
+
+
+        #endregion
+
+ 
+   
 
 
     }
