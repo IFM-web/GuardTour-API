@@ -4,9 +4,9 @@ namespace GuardTour_API.Models
 {
     public class ResponseMassage
     {
-        public string Massage {  get; set; }
-        public HttpStatusCode StatusCode { get; set; }
+        public string Message {  get; set; }
+        public string Status { get; set; }
 
-        public object Data { get; set; }
+    
     }
 }

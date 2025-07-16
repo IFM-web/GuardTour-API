@@ -49,8 +49,8 @@ namespace GuardTour_API
                 }
                 catch (Exception exce)
                 {
-                    query = "Transaction Rolleutilck. Due to " + exce.Message;
-                    util.WriteLogFile("Errorlog", "input'" + query + "---Output--" + exce.Message + "'", "", "", "", "", "", "", "Fill");
+                    query = "Failure";
+                   
                 }
                 finally
                 {
@@ -62,7 +62,7 @@ namespace GuardTour_API
         public DataSet Fill(string sql)
         {
             DataSet ds = new DataSet();
-            util.WriteLogFile("Apilog", "input'" + sql + "'", "", "", "", "", "", "", "Fill");
+            
             using (SqlConnection sqcon = new SqlConnection(constring))
             {
                 try
@@ -76,18 +76,20 @@ namespace GuardTour_API
                 {
                     DataSet dset = new DataSet();
                     DataTable dt = new DataTable();
-                    dt.Columns.Add("Data");
-                    dt.Columns.Add("mail");
-                    dt.Columns.Add("sms");
+                    dt.Columns.Add("Message");
+                    dt.Columns.Add("Status");
+                   
                     DataRow dr = dt.NewRow();
 
-                    dr["Data"] = "{\"Message\":\"" + exce.Message + "\",\"Status\":\"error\",\"Data\":\"[]\"}";
-                    dr["mail"] = "[]";
-                    dr["sms"] = "[]";
+                    dr["Message"] = "Failure";
+                    dr["Status"] = "Error";
+
+                    
+
                     dt.Rows.Add(dr);
                     dset.Tables.Add(dt);
 
-                    util.WriteLogFile("Errorlog", "input'" + sql + "---Output--" + exce.Message + "'", "", "", "", "", "", "", "Fill");
+               
                     return dset;
 
                 }
@@ -502,8 +504,10 @@ namespace GuardTour_API
                 //SmtpClient.Port = Convert.ToInt32(iConfig.GetSection("ISSMTPPORT").Value);
                 SmtpClient.Host = Host;//"mail.bsdinfotech.com";
                 SmtpClient.Credentials = new NetworkCredential(_from, MAIL_PASSWORD);
-                SmtpClient.Port = 25;
+                SmtpClient.Port = 587;
+                SmtpClient.EnableSsl = true;
                 SmtpClient.Send(mail);
+              
                 functionReturnValue = "Sent";
                 mail.Dispose();
                 SmtpClient = null;

@@ -2,7 +2,7 @@
 
 namespace GuardTour_API.Models
 {
-    public class InsertTour
+    public class AlertModel
     {
         public string? CompanyId { get; set; } = string.Empty;
         public string? BranchId { get; set; } = string.Empty;
@@ -17,8 +17,7 @@ namespace GuardTour_API.Models
         public string? ShiftId { get; set; } = string.Empty;
         public string? BeatId { get; set; } = string.Empty;
         public string? Remark { get; set; } = string.Empty;
-        public string? Image { get; set; } = "0";
-
-        public int AlertFlg { get; set;}
+        public string? Image { get; set; } = string.Empty;
+       
     }
 }
