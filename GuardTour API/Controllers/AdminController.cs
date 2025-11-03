@@ -15,6 +15,7 @@ namespace GuardTour_API.Controllers
     {
         db_Utility util = new db_Utility();
         ClsUtility csutil = new ClsUtility();
+
         ResponseMassage Response;
 
         #region ForgetPassword
@@ -92,14 +93,90 @@ namespace GuardTour_API.Controllers
 
         #endregion
 
+        #region Customer      
+        [HttpGet("Customer")]
+        public IActionResult Customer(string EmployeeId, string CompanyId, string BranchId)
+        {
 
+            try
+            {
+                var ds = util.Fill(@$"exec APP_Usp_GetCustomerByEmp @EmpId='{EmployeeId.Trim()}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+                var data = ds.Tables[0];
+                if (data.Rows.Count == 0)
+                {
+                    return Content(JsonConvert.SerializeObject(new[] { new { Message = "No Customer Found", Status = "Error" } }), "application/json");
+                }
 
+                return Content(JsonConvert.SerializeObject(data), "application/json");
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message
+                    , Status = "Error" } }), "application/json");
+            }
+        }
+        #endregion
+        #region CustomerFLG      
+        [HttpGet("CustomerFLG")]
+        public IActionResult CustomerFLG(string CustomerId)
+        {
+
+            try
+            {
+                var ds = util.Fill(@$"exec [APP_Usp_CustomerFlg] @CustomerId='{CustomerId}'");
+                var data = ds.Tables[0];
+                if (data.Rows.Count == 0)
+                {
+                    return Content(JsonConvert.SerializeObject(new[] { new { Message = "No CustomerFLG  Found", Status = "Error" } }), "application/json");
+                }
+
+                return Content(JsonConvert.SerializeObject(data), "application/json");
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message
+                    , Status = "Error" } }), "application/json");
+            }
+        }
+
+        #endregion
+
+        #region Site      
+        [HttpGet("Site")]
+        public IActionResult Site(string EmployeeId, string CustomerId, string CompanyId, string BranchId)
+        {
+
+            try
+            {
+                var ds = util.Fill(@$"exec APP_Usp_GetSiteByCustomer @EmpId='{EmployeeId}',@CustomerId='{CustomerId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+                var data = ds.Tables[0];
+                if (data.Rows.Count == 0)
+                {
+                    return Content(JsonConvert.SerializeObject(new[] { new { Message = "No Site Found", Status = "Error" } }), "application/json");
+                }
+
+                return Content(JsonConvert.SerializeObject(data), "application/json");
+
+            }
+            catch (Exception ex)
+            {
+
+                return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message
+                    , Status = "Error" } }), "application/json");
+            }
+        }
+
+        #endregion
         #region GetTaskdetails
 
         [HttpGet("GetTaskdetailsUpcoming")]
-        public IActionResult GetTaskdetails(string EmployeeId, string BranchId, string CompanyId)
+        public IActionResult GetTaskdetails(string EmployeeId, string CustomerId, string SiteId, string BranchId, string CompanyId)
         {
-            var ds = util.Fill("exec API_Usp_GetTaskdetails @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "'");
+            var ds = util.Fill("exec API_Usp_GetTaskdetails @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
             if (ds.Tables[0].Rows.Count != 0)
             {
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -116,9 +193,9 @@ namespace GuardTour_API.Controllers
         #region GetTaskdetailsCompleted
 
         [HttpGet("GetTaskdetailsCompleted")]
-        public IActionResult GetTaskCompeleteddetails(string EmployeeId, string BranchId, string CompanyId)
+        public IActionResult GetTaskdetailsCompleted(string EmployeeId, string CustomerId, string SiteId, string BranchId, string CompanyId)
         {
-            var ds = util.Fill("exec [API_Usp_GetTaskdetailsCompleted] @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "'");
+            var ds = util.Fill("exec [API_Usp_GetTaskdetailsCompleted] @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
             if (ds.Tables[0].Rows.Count != 0)
             {
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -136,11 +213,11 @@ namespace GuardTour_API.Controllers
 
         #region GetRoutePost
         [HttpGet("GetRoutePost")]
-        public IActionResult GetRoutePost(string CompanyId, string BranchId,string EmployeeId,string CustomerId, string RouteCode,string SiteId, string ShiftId,string BeatId)
+        public IActionResult GetRoutePost(string CompanyId, string BranchId, string EmployeeId, string CustomerId, string RouteCode, string SiteId, string ShiftId, string BeatId)
         {
             try
             {
-                var ds = util.Fill("exec API_Usp_GetPost @EmpId='" + EmployeeId + "',@RouteCode='" + RouteCode + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@BeatId='" + BeatId+ "',@CustomerId='"+CustomerId+ "',@SiteId='"+SiteId+ "',@ShiftId='"+ ShiftId + "'");
+                var ds = util.Fill("exec API_Usp_GetPost @EmpId='" + EmployeeId + "',@RouteCode='" + RouteCode + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@BeatId='" + BeatId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "',@ShiftId='" + ShiftId + "'");
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -160,42 +237,19 @@ namespace GuardTour_API.Controllers
         }
         #endregion
 
-        //#region ValidatePostId
-        //[HttpGet("ValidatePostId")]
-        //public IActionResult GetPost(string PostCode, string RouteId, string EmployeeId, string CompanyId, string BranchId)
-        //{
-        //	var ds = util.Fill("exec API_Usp_GetPost @Action='Single',@EmpId='" + EmployeeId + "',@RouteId='" + RouteId + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@PostId='" + PostCode + "'");
-
-        //	if (ds.Tables[0].Rows.Count != 0)
-        //	{
-        //		return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
-        //	}
-        //	else
-        //	{
-        //		return NotFound(new[]
-        //		{
-
-        //		new 
-        //		{
-        //			Status = HttpStatusCode.NotFound,
-        //			Message = $"No post found with ID = {PostCode}"
-        //		}});
-        //	}
-        //}
-
-        //#endregion
+        
 
 
         #region CheckGeoLocation
 
         [HttpGet("CheckGeoLocation")]
-        public IActionResult CheckGeolocatoin(string PostId, float Latitude, float Longitude,string StartTime ,string EndTime,string BeatId)
+        public IActionResult CheckGeolocatoin(string PostId, float Latitude, float Longitude, string StartTime, string EndTime, string BeatId)
         {
             try
             {
 
 
-                var ds = util.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='"+StartTime+ "',@EndTime='"+EndTime+ "',@BeatId='"+BeatId+"' ");
+                var ds = util.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='" + StartTime + "',@EndTime='" + EndTime + "',@BeatId='" + BeatId + "' ");
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     return Content(JsonConvert.SerializeObject(ds.Tables[0]), "applicatin/json");
@@ -214,98 +268,7 @@ namespace GuardTour_API.Controllers
         }
         #endregion
 
-//        #region EmergencyAlert
-
-   
-//        public string EmergencyAlert(DataTable dt)
-//        {
-//            try
-
-//            {
-
-                
-//                string msg = "";
-
-
-
-           
-
-
-
-//                        ClsUtility clsUtility = new ClsUtility();
-//                        var row = dt.Rows[0];
-//                        string body = $@"
-
-
-//<div style=""font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e74c3c; border-radius: 8px; padding: 20px; background-color: #fff;"">
-//    <h2 style=""color: #e74c3c; text-align: center;"">🚨 SOS Alert Triggered</h2>
-    
-//    <p style=""font-size: 16px; color: #333;"">
-//        We have received an <strong>SOS</strong> with the following details:
-//    </p>
-
-//    <table style=""width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 15px;"">
-//        <tr style=""background-color: #f2f2f2;"">
-//            <td style=""padding: 10px; font-weight: bold; width: 30%;"">Customer</td>
-//            <td style=""padding: 10px;"">{row["CustomerName"]}</td>
-//        </tr>
-//        <tr>
-//            <td style=""padding: 10px; font-weight: bold;"">Site</td>
-//            <td style=""padding: 10px;"">{row["SitName"]}</td>
-//        </tr>
-//        <tr style=""background-color: #f2f2f2;"">
-//            <td style=""padding: 10px; font-weight: bold;"">Route</td>
-//            <td style=""padding: 10px;"">{row["RouteCode"]}</td>
-//        </tr>
-//        <tr>
-//            <td style=""padding: 10px; font-weight: bold;"">Post</td>
-//            <td style=""padding: 10px;"">{row["PostName"]}</td>
-//        </tr>
-//        <tr style=""background-color: #f2f2f2;"">
-//            <td style=""padding: 10px; font-weight: bold;"">Shift</td>
-//            <td style=""padding: 10px;"">{row["Shift"]}</td>
-//        </tr>
-// <tr>
-//            <td style=""padding: 10px; font-weight: bold;"">Frequency Time</td>
-//            <td style=""padding: 10px;"">{row["RoundTime"]}</td>
-//        </tr>
-// <tr style=""background-color: #f2f2f2;"">
-//            <td style=""padding: 10px; font-weight: bold;"">Date</td>
-//            <td style=""padding: 10px;"">{row["Date"]}</td>
-//        </tr>
-//    </table>
-
-//    <p style=""margin-top: 20px; font-size: 14px; color: #666;"">
-//        Please take immediate action as necessary. <br>
-        
-//    </p>
-//</div>
-
-//";
-//                         msg = clsUtility.SendMailViaIIS_html("v19softech@gmail.com", "Nadeemali.bsd@gmail.com", "", "", "SOS Triggered: Urgent Help Requested", "", body, null, "hxezpeqrunircjhe", "smtp.gmail.com", "");
-                    
-//                return msg;
-
-                 
-
-
-                  
-              
-                 
-
-
-//            }
-//            catch (Exception ex)
-//            {
-//                return ex.Message ;
-//            }
-
-
-//        }
-
-
-//        #endregion
-
+       
 
         #region InsertTour
 
@@ -313,117 +276,109 @@ namespace GuardTour_API.Controllers
         public IActionResult InsertTour([FromForm] InsertTour obj)
         {
             try
-
             {
+                ClsUtility clsUtility = new ClsUtility();
 
 
-                //Byte[] bs;
-                //using (var memoryStream = new MemoryStream())
-                //{
-                //	obj.Image.CopyTo(memoryStream);
-                //	bs = memoryStream.ToArray();
-                //}
-
-              
-
-                    Byte[] bs;
-
-
-                    if (obj.Image != null)
-                    {
-                        bs = Convert.FromBase64String(obj.Image);
-                    }
-                    else
-                    {
-                        bs = null;
-
-                    }
-
-
-
-                    var ds = util.Fill(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.CustomerId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}',@shiftid='{obj.ShiftId}',@BeatId='{obj.BeatId}',@Latitude='{obj.Latitude}',@Longitude='{obj.Longitude}',@LocationName='{obj.LocationName}',@AlertFlg='{obj.AlertFlg}'");
-
-                if (ds.Tables.Count > 0)
+                var ds = util.Fill(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.CustomerId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}',@Image2='{obj.Image2}',@Audio='{obj.Audio}',@shiftid='{obj.ShiftId}',@BeatId='{obj.BeatId}',@Latitude='{obj.Latitude}',@Longitude='{obj.Longitude}',@LocationName='{obj.LocationName}',@AlertFlg='{obj.AlertFlg}'");
+                var obj1 = obj;
+                obj1.Image = "";
+                if (obj.AlertFlg == 0)
                 {
-                    if (obj.AlertFlg == 1)
-                    {
-                        ClsUtility clsUtility = new ClsUtility();
+                    var jsondata = JsonConvert.SerializeObject(obj1);
+                    var data1 = JsonConvert.SerializeObject(ds.Tables[0]);
+                    clsUtility.WriteLogFile("Apilog", jsondata, "", "", "", "", "", "", data1);
+                }
 
+                if (obj.AlertFlg == 1)
+                {
+                    if (ds.Tables.Count > 0)
+                    {
+
+                        var cometodb = JsonConvert.SerializeObject(ds.Tables[0]);
+                        clsUtility.WriteLogFile("Apilog", cometodb, "", "", "", "", "", "", "Alert Flag");
                         var row = ds.Tables[0].Rows[0];
                         string body = $@"
 
 
-<div style=""font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e74c3c; border-radius: 8px; padding: 20px; background-color: #fff;"">
-    <h2 style=""color: #e74c3c; text-align: center;"">🚨 SOS Alert Triggered</h2>
+                                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e74c3c; border-radius: 8px; padding: 20px; background-color: #fff;"">
+                                        <h2 style=""color: #e74c3c; text-align: center;""> Observation Report </h2>
     
-    <p style=""font-size: 16px; color: #333;"">
-        We have received an <strong>SOS</strong> with the following details:
-    </p>
+                                        <p style=""font-size: 16px; color: #333;"">
+                                            We have received an <strong>Observation</strong> with the following details:
+                                        </p>
 
-    <table style=""width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 15px;"">
-        <tr style=""background-color: #f2f2f2;"">
-            <td style=""padding: 10px; font-weight: bold; width: 30%;"">Customer</td>
-            <td style=""padding: 10px;"">{row["CustomerName"]}</td>
-        </tr>
-        <tr>
-            <td style=""padding: 10px; font-weight: bold;"">Site</td>
-            <td style=""padding: 10px;"">{row["SitName"]}</td>
-        </tr>
-        <tr style=""background-color: #f2f2f2;"">
-            <td style=""padding: 10px; font-weight: bold;"">Route</td>
-            <td style=""padding: 10px;"">{row["RouteCode"]}</td>
-        </tr>
-        <tr>
-            <td style=""padding: 10px; font-weight: bold;"">Post</td>
-            <td style=""padding: 10px;"">{row["PostName"]}</td>
-        </tr>
-        <tr style=""background-color: #f2f2f2;"">
-            <td style=""padding: 10px; font-weight: bold;"">Shift</td>
-            <td style=""padding: 10px;"">{row["Shift"]}</td>
-        </tr>
- <tr>
-            <td style=""padding: 10px; font-weight: bold;"">Frequency Time</td>
-            <td style=""padding: 10px;"">{row["RoundTime"]}</td>
-        </tr>
- <tr style=""background-color: #f2f2f2;"">
-            <td style=""padding: 10px; font-weight: bold;"">Date</td>
-            <td style=""padding: 10px;"">{row["Date"]}</td>
-        </tr>
- <tr style="""">
-            <td style=""padding: 10px; font-weight: bold;"">Remark</td>
-            <td style=""padding: 10px;"">{row["Remark"]}</td>
-        </tr>
-    </table>
+                                        <table style=""width: 100%; border-collapse: collapse; font-size: 15px; margin-top: 15px;"">
+                                            <tr style=""background-color: #f2f2f2;"">
+                                                <td style=""padding: 10px; font-weight: bold; width: 30%;"">Customer</td>
+                                                <td style=""padding: 10px;"">{row["CustomerName"]}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style=""padding: 10px; font-weight: bold;"">Site</td>
+                                                <td style=""padding: 10px;"">{row["SitName"]}</td>
+                                            </tr>
+                                            <tr style=""background-color: #f2f2f2;"">
+                                                <td style=""padding: 10px; font-weight: bold;"">Route</td>
+                                                <td style=""padding: 10px;"">{row["RouteCode"]}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style=""padding: 10px; font-weight: bold;"">Post</td>
+                                                <td style=""padding: 10px;"">{row["PostName"]}</td>
+                                            </tr>
+                                            <tr style=""background-color: #f2f2f2;"">
+                                                <td style=""padding: 10px; font-weight: bold;"">Shift</td>
+                                                <td style=""padding: 10px;"">{row["Shift"]}</td>
+                                            </tr>
+                                     <tr>
+                                                <td style=""padding: 10px; font-weight: bold;"">Frequency Time</td>
+                                                <td style=""padding: 10px;"">{row["RoundTime"]}</td>
+                                            </tr>
+                                     <tr style=""background-color: #f2f2f2;"">
+                                                <td style=""padding: 10px; font-weight: bold;"">Date</td>
+                                                <td style=""padding: 10px;"">{row["Date"]}</td>
+                                            </tr>
+                                     <tr style="""">
+                                                <td style=""padding: 10px; font-weight: bold;"">Remark</td>
+                                                <td style=""padding: 10px;"">{row["Remark"]}</td>
+                                            </tr>
+                                        </table>
 
-    <p style=""margin-top: 20px; font-size: 14px; color: #666;"">
-        Please take immediate action as necessary. <br>
+                                        <p style=""margin-top: 20px; font-size: 14px; color: #666;"">
+                                            Please take immediate action as necessary. <br>
         
-    </p>
-</div>
+                                        </p>
+                                    </div>
 
-";
-                       string msg = clsUtility.SendMailViaIIS_html("v19softech@gmail.com", "pradeep.yadav@ifm360.in", "", "", "SOS Triggered: Urgent Help Requested", "", body, null, "hxezpeqrunircjhe", "smtp.gmail.com", "");
+                                    ";
+                        string msg = clsUtility.SendMailViaIIS_html("v19softech@gmail.com", "chanchalk@luluindia.com", "pradeep.yadav@ifm360.in", "", "Observation Triggered: Urgent Help Requested", "", body, null, "hxezpeqrunircjhe", "smtp.gmail.com", "");
 
 
                         if (msg == "Sent")
                         {
+                            obj.Image = "";
+                            string datacome = JsonConvert.SerializeObject(obj);
+                            clsUtility.WriteLogFile("Apilog", datacome, "", "", "", "", "", "", "Email Sent SuccessFully");
 
-
-                            return Content(JsonConvert.SerializeObject(new[] { new { Message = "Alert " + msg + " SuccessFully", Status = "Success" } }), "application/json");
+                            return Content(JsonConvert.SerializeObject(new[] { new { Message = "Report Observation SuccessFully", Status = "Success" } }), "application/json");
                         }
-                      
+
                     }
+
 
                 }
 
-              
-                    return Content(JsonConvert.SerializeObject(new[] { new { Message = "Submit SuccessFully", Status = "Success" } }), "application/json");
+                return Content(JsonConvert.SerializeObject(new[] { new { Message = "Submit SuccessFully", Status = "Success" } }), "application/json");
 
-                
+
+
+
+
+
 
             }
             catch (Exception ex)
             {
+                csutil.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
                 return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message, Status = "Error" } }), "application/json");
             }
 
@@ -433,9 +388,37 @@ namespace GuardTour_API.Controllers
 
         #endregion
 
+        [HttpGet("SOS")]
+        public IActionResult SOS(string EmployeeId, string CompanyId, string BranchId)
+        {
+
+
+            var ds = util.Fill(@$"exec App_Usp_EmergencyAlert @EmployeeId='{EmployeeId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+
+            return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
 
 
 
 
+        }
+
+        [HttpPost("ReportIncident")]
+        public IActionResult ReportIncident([FromForm] ReportIncident obj)
+        {
+            try
+            {
+                var ds = util.Fill(@$"exec [App_Usp_ReportIncident] @EmployeeId='{obj.EmployeeId}',@CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@CustomerId='{obj.CustomerId}',@SiteId='{obj.SiteId}',@Remark=N'{obj.Remark}',@ImageFile=N'{obj.Image}',@Audio='{obj.Audio}'
+");
+                return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
+
+            }
+            catch (Exception ex)
+            {
+                csutil.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
+                return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message, Status = "Error" } }), "application/json");
+            }
+
+
+        }
     }
 }

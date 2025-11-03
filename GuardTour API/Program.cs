@@ -1,7 +1,15 @@
 using GuardTour_API.Models;
 using Microsoft.AspNetCore.Mvc;
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Add services to the container.
 ConnectDB.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
@@ -27,14 +35,14 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     
-    c.SwaggerEndpoint("/GuardTourAPI/swagger/v1/swagger.json", "GaurdTour API V1.0");
+    c.SwaggerEndpoint("/GuardTourAPI/swagger/v1/swagger.json", "GaurdTour API V2.1.1");
 
     c.RoutePrefix = "swagger";
 });
 
 
 app.UseStaticFiles();
-
+app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();

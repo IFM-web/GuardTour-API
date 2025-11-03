@@ -18,6 +18,8 @@ namespace GuardTour_API.Models
         public string? BeatId { get; set; } = string.Empty;
         public string? Remark { get; set; } = string.Empty;
         public string? Image { get; set; } = "0";
+        public string? Image2 { get; set; } = "0";
+        public string? Audio { get; set; } = "0";
 
         public int AlertFlg { get; set;}
     }

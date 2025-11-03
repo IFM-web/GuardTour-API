@@ -1,0 +1,3 @@
+
+16/07/2025 17:40:17 - [{"CustomerName":"lullu11","SitName":"noida1","Shift":"A (10:00 - 14:00)","RouteCode":"1st","PostName":"P2","Round":"39","RoundTime":"(11:00 - 12:00)","Date":"16 Jul 2025","Remark":"string"}] -  -  -  -  -  - Email Seding
+16/07/2025 17:40:21 - {"CompanyId":"36","BranchId":"6","CustomerId":"34","SiteId":"4","RouteCode":"1st","PostId":"15","Latitude":"23.23232","Longitude":"12.23211","LocationName":"stringweqr","EmployeeId":"2","ShiftId":"8","BeatId":"39","Remark":"string","Image":"","AlertFlg":1} -  -  -  -  -  - Email Seding

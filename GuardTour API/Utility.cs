@@ -415,7 +415,7 @@ namespace GuardTour_API
 
                 if (!string.IsNullOrEmpty(Query))
                 {
-                    string path = Path.Combine("wwwroot/LOG/" + LogPath + "/" + System.DateTime.UtcNow.ToString("dd-MM-yyyy") + ".txt");
+                    string path = Path.Combine("APILOG/" + LogPath + "/" + System.DateTime.UtcNow.ToString("dd-MM-yyyy") + ".txt");
 
                     if (!File.Exists(path))
                     {
