@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 ConnectDB.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
-
+builder.Services.AddScoped<IServices, ServicesOpration>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

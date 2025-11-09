@@ -1,20 +1,17 @@
 ﻿using GuardTour_API.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace GuardTour_API.Controllers
 {
     [Route("API/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
     {
-        db_Utility util = new db_Utility();
-        ClsUtility csutil = new ClsUtility();
+       readonly IServices _db;
+        public AdminController(IServices Services)
+        {
+            this._db = Services;
+        }
 
         ResponseMassage Response;
 
@@ -30,7 +27,7 @@ namespace GuardTour_API.Controllers
                 //string oldpwden = EncryptionHelper.Encrypt(obj.OldPassword);
 
 
-                var ds = util.Fill("exec Udp_Forgetpassword @username='" + obj.EmployeeCode.Trim() + "',@oldpwd='" + obj.OldPassword.Trim() + "',@confpwd='" + obj.ConfirmPassword.Trim() + "'");
+                var ds = _db.Fill("exec Udp_Forgetpassword @username='" + obj.EmployeeCode.Trim() + "',@oldpwd='" + obj.OldPassword.Trim() + "',@confpwd='" + obj.ConfirmPassword.Trim() + "'");
                 string errmsg = ds.Tables[0].Rows[0][1].ToString();
                 if (errmsg == "Password Updated SuccessFully")
                 {
@@ -77,7 +74,7 @@ namespace GuardTour_API.Controllers
 
             try
             {
-                var ds = util.Fill("exec EmployeeLogin @EmpId='" + EmployeeId.Trim() + "',@password='" + EmployeePassword.Trim() + "'");
+                var ds = _db.Fill("exec EmployeeLogin @EmpId='" + EmployeeId.Trim() + "',@password='" + EmployeePassword.Trim() + "'");
                 var data = ds.Tables[0];
 
                 return Content(JsonConvert.SerializeObject(data), "application/json");
@@ -100,7 +97,7 @@ namespace GuardTour_API.Controllers
 
             try
             {
-                var ds = util.Fill(@$"exec APP_Usp_GetCustomerByEmp @EmpId='{EmployeeId.Trim()}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+                var ds = _db.Fill(@$"exec APP_Usp_GetCustomerByEmp @EmpId='{EmployeeId.Trim()}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
                 var data = ds.Tables[0];
                 if (data.Rows.Count == 0)
                 {
@@ -125,7 +122,7 @@ namespace GuardTour_API.Controllers
 
             try
             {
-                var ds = util.Fill(@$"exec [APP_Usp_CustomerFlg] @CustomerId='{CustomerId}'");
+                var ds = _db.Fill(@$"exec [APP_Usp_CustomerFlg] @CustomerId='{CustomerId}'");
                 var data = ds.Tables[0];
                 if (data.Rows.Count == 0)
                 {
@@ -152,7 +149,7 @@ namespace GuardTour_API.Controllers
 
             try
             {
-                var ds = util.Fill(@$"exec APP_Usp_GetSiteByCustomer @EmpId='{EmployeeId}',@CustomerId='{CustomerId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+                var ds = _db.Fill(@$"exec APP_Usp_GetSiteByCustomer @EmpId='{EmployeeId}',@CustomerId='{CustomerId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
                 var data = ds.Tables[0];
                 if (data.Rows.Count == 0)
                 {
@@ -176,7 +173,7 @@ namespace GuardTour_API.Controllers
         [HttpGet("GetTaskdetailsUpcoming")]
         public IActionResult GetTaskdetails(string EmployeeId, string CustomerId, string SiteId, string BranchId, string CompanyId)
         {
-            var ds = util.Fill("exec API_Usp_GetTaskdetails @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
+            var ds = _db.Fill("exec API_Usp_GetTaskdetails @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
             if (ds.Tables[0].Rows.Count != 0)
             {
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -195,7 +192,7 @@ namespace GuardTour_API.Controllers
         [HttpGet("GetTaskdetailsCompleted")]
         public IActionResult GetTaskdetailsCompleted(string EmployeeId, string CustomerId, string SiteId, string BranchId, string CompanyId)
         {
-            var ds = util.Fill("exec [API_Usp_GetTaskdetailsCompleted] @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
+            var ds = _db.Fill("exec [API_Usp_GetTaskdetailsCompleted] @EmpId='" + EmployeeId + "',@BranchId='" + BranchId + "',@CompanyId='" + CompanyId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "'");
             if (ds.Tables[0].Rows.Count != 0)
             {
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -217,7 +214,7 @@ namespace GuardTour_API.Controllers
         {
             try
             {
-                var ds = util.Fill("exec API_Usp_GetPost @EmpId='" + EmployeeId + "',@RouteCode='" + RouteCode + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@BeatId='" + BeatId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "',@ShiftId='" + ShiftId + "'");
+                var ds = _db.Fill("exec API_Usp_GetPost @EmpId='" + EmployeeId + "',@RouteCode='" + RouteCode + "',@CompanyId='" + CompanyId + "',@BranchId='" + BranchId + "',@BeatId='" + BeatId + "',@CustomerId='" + CustomerId + "',@SiteId='" + SiteId + "',@ShiftId='" + ShiftId + "'");
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
@@ -249,7 +246,7 @@ namespace GuardTour_API.Controllers
             {
 
 
-                var ds = util.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='" + StartTime + "',@EndTime='" + EndTime + "',@BeatId='" + BeatId + "' ");
+                var ds = _db.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='" + StartTime + "',@EndTime='" + EndTime + "',@BeatId='" + BeatId + "' ");
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     return Content(JsonConvert.SerializeObject(ds.Tables[0]), "applicatin/json");
@@ -277,17 +274,17 @@ namespace GuardTour_API.Controllers
         {
             try
             {
-                ClsUtility clsUtility = new ClsUtility();
+                
 
 
-                var ds = util.Fill(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.CustomerId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}',@Image2='{obj.Image2}',@Audio='{obj.Audio}',@shiftid='{obj.ShiftId}',@BeatId='{obj.BeatId}',@Latitude='{obj.Latitude}',@Longitude='{obj.Longitude}',@LocationName='{obj.LocationName}',@AlertFlg='{obj.AlertFlg}'");
+                var ds = _db.Fill(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.CustomerId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}',@Image2='{obj.Image2}',@Audio='{obj.Audio}',@shiftid='{obj.ShiftId}',@BeatId='{obj.BeatId}',@Latitude='{obj.Latitude}',@Longitude='{obj.Longitude}',@LocationName='{obj.LocationName}',@AlertFlg='{obj.AlertFlg}'");
                 var obj1 = obj;
                 obj1.Image = "";
                 if (obj.AlertFlg == 0)
                 {
                     var jsondata = JsonConvert.SerializeObject(obj1);
                     var data1 = JsonConvert.SerializeObject(ds.Tables[0]);
-                    clsUtility.WriteLogFile("Apilog", jsondata, "", "", "", "", "", "", data1);
+                    _db.WriteLogFile("Apilog", jsondata, "", "", "", "", "", "", data1);
                 }
 
                 if (obj.AlertFlg == 1)
@@ -296,7 +293,7 @@ namespace GuardTour_API.Controllers
                     {
 
                         var cometodb = JsonConvert.SerializeObject(ds.Tables[0]);
-                        clsUtility.WriteLogFile("Apilog", cometodb, "", "", "", "", "", "", "Alert Flag");
+                        _db.WriteLogFile("Apilog", cometodb, "", "", "", "", "", "", "Alert Flag");
                         var row = ds.Tables[0].Rows[0];
                         string body = $@"
 
@@ -350,14 +347,14 @@ namespace GuardTour_API.Controllers
                                     </div>
 
                                     ";
-                        string msg = clsUtility.SendMailViaIIS_html("v19softech@gmail.com", "chanchalk@luluindia.com", "pradeep.yadav@ifm360.in", "", "Observation Triggered: Urgent Help Requested", "", body, null, "hxezpeqrunircjhe", "smtp.gmail.com", "");
+                        string msg = _db.SendEmall("v19softech@gmail.com", "chanchalk@luluindia.com", "pradeep.yadav@ifm360.in", "", "Observation Triggered: Urgent Help Requested", "", body, null, "hxezpeqrunircjhe", "smtp.gmail.com", "");
 
 
                         if (msg == "Sent")
                         {
                             obj.Image = "";
                             string datacome = JsonConvert.SerializeObject(obj);
-                            clsUtility.WriteLogFile("Apilog", datacome, "", "", "", "", "", "", "Email Sent SuccessFully");
+                            _db.WriteLogFile("Apilog", datacome, "", "", "", "", "", "", "Email Sent SuccessFully");
 
                             return Content(JsonConvert.SerializeObject(new[] { new { Message = "Report Observation SuccessFully", Status = "Success" } }), "application/json");
                         }
@@ -378,7 +375,7 @@ namespace GuardTour_API.Controllers
             }
             catch (Exception ex)
             {
-                csutil.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
+                _db.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
                 return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message, Status = "Error" } }), "application/json");
             }
 
@@ -393,7 +390,7 @@ namespace GuardTour_API.Controllers
         {
 
 
-            var ds = util.Fill(@$"exec App_Usp_EmergencyAlert @EmployeeId='{EmployeeId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
+            var ds = _db.Fill(@$"exec App_Usp_EmergencyAlert @EmployeeId='{EmployeeId}',@CompanyId='{CompanyId}',@BranchId='{BranchId}'");
 
             return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
 
@@ -407,14 +404,14 @@ namespace GuardTour_API.Controllers
         {
             try
             {
-                var ds = util.Fill(@$"exec [App_Usp_ReportIncident] @EmployeeId='{obj.EmployeeId}',@CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@CustomerId='{obj.CustomerId}',@SiteId='{obj.SiteId}',@Remark=N'{obj.Remark}',@ImageFile=N'{obj.Image}',@Audio='{obj.Audio}'
+                var ds = _db.Fill(@$"exec [App_Usp_ReportIncident] @EmployeeId='{obj.EmployeeId}',@CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@CustomerId='{obj.CustomerId}',@SiteId='{obj.SiteId}',@Remark=N'{obj.Remark}',@ImageFile=N'{obj.Image}',@Audio='{obj.Audio}'
 ");
                 return Content(JsonConvert.SerializeObject(ds.Tables[0]), "application/json");
 
             }
             catch (Exception ex)
             {
-                csutil.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
+                _db.WriteLogFile("Errorlog", ex.Message, "", "", "", "", "", "", "Error");
                 return Content(JsonConvert.SerializeObject(new[] { new { Message = ex.Message, Status = "Error" } }), "application/json");
             }
 
