@@ -1,6 +1,8 @@
 ﻿using GuardTour_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using System.Data;
 namespace GuardTour_API.Controllers
 {
     [Route("API/[controller]")]
@@ -115,6 +117,7 @@ namespace GuardTour_API.Controllers
             }
         }
         #endregion
+
         #region CustomerFLG      
         [HttpGet("CustomerFLG")]
         public IActionResult CustomerFLG(string CustomerId)
@@ -168,6 +171,8 @@ namespace GuardTour_API.Controllers
         }
 
         #endregion
+                
+       
         #region GetTaskdetails
 
         [HttpGet("GetTaskdetailsUpcoming")]
@@ -206,8 +211,6 @@ namespace GuardTour_API.Controllers
         }
         #endregion
 
-
-
         #region GetRoutePost
         [HttpGet("GetRoutePost")]
         public IActionResult GetRoutePost(string CompanyId, string BranchId, string EmployeeId, string CustomerId, string RouteCode, string SiteId, string ShiftId, string BeatId)
@@ -234,19 +237,16 @@ namespace GuardTour_API.Controllers
         }
         #endregion
 
-        
-
-
         #region CheckGeoLocation
 
         [HttpGet("CheckGeoLocation")]
-        public IActionResult CheckGeolocatoin(string PostId, float Latitude, float Longitude, string StartTime, string EndTime, string BeatId)
+        public IActionResult CheckGeolocatoin(string PostId,string QRValue, float Latitude, float Longitude, string StartTime, string EndTime, string BeatId)
         {
             try
             {
 
 
-                var ds = _db.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='" + StartTime + "',@EndTime='" + EndTime + "',@BeatId='" + BeatId + "' ");
+                var ds = _db.Fill("exec App_Usp_CheckGeoLoaction @PostId='" + PostId + "',@Latitude='" + Latitude + "',@Longitude='" + Longitude + "',@StartTime='" + StartTime + "',@EndTime='" + EndTime + "',@BeatId='" + BeatId + "',@QRValue='"+ QRValue + "' ");
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     return Content(JsonConvert.SerializeObject(ds.Tables[0]), "applicatin/json");
@@ -265,8 +265,6 @@ namespace GuardTour_API.Controllers
         }
         #endregion
 
-       
-
         #region InsertTour
 
         [HttpPost("InsertTour")]
@@ -274,7 +272,7 @@ namespace GuardTour_API.Controllers
         {
             try
             {
-                
+
 
 
                 var ds = _db.Fill(@$"exec App_Usp_InsertTour @CompanyId='{obj.CompanyId}',@BranchId='{obj.BranchId}',@SiteId='{obj.SiteId}',@RouteCode='{obj.RouteCode}',@PostId='{obj.PostId}',@CustomerId='{obj.CustomerId}',@EmmployeeId='{obj.EmployeeId}',@remark='{obj.Remark}',@Image='{obj.Image}',@Image2='{obj.Image2}',@Audio='{obj.Audio}',@shiftid='{obj.ShiftId}',@BeatId='{obj.BeatId}',@Latitude='{obj.Latitude}',@Longitude='{obj.Longitude}',@LocationName='{obj.LocationName}',@AlertFlg='{obj.AlertFlg}'");
@@ -385,6 +383,9 @@ namespace GuardTour_API.Controllers
 
         #endregion
 
+
+        #region SOS
+
         [HttpGet("SOS")]
         public IActionResult SOS(string EmployeeId, string CompanyId, string BranchId)
         {
@@ -398,6 +399,9 @@ namespace GuardTour_API.Controllers
 
 
         }
+        #endregion
+
+        #region ReportIncident
 
         [HttpPost("ReportIncident")]
         public IActionResult ReportIncident([FromForm] ReportIncident obj)
@@ -417,5 +421,6 @@ namespace GuardTour_API.Controllers
 
 
         }
+        #endregion
     }
 }

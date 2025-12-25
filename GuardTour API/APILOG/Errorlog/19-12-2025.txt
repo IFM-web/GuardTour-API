@@ -1,0 +1,7 @@
+19/12/2025 12:24:48 - The procedure "App_Usp_InsertTournew" has no parameter named "@Images". -  -  -  -  -  - Error
+19/12/2025 12:26:32 - Procedure or function 'App_Usp_InsertTournew' expects parameter '@EmmployeeId', which was not supplied. -  -  -  -  -  - Error
+19/12/2025 12:27:15 - Procedure or function 'App_Usp_InsertTournew' expects parameter '@EmmployeeId', which was not supplied. -  -  -  -  -  - Error
+19/12/2025 12:29:17 - Procedure or function 'App_Usp_InsertTournew' expects parameter '@Image', which was not supplied. -  -  -  -  -  - Error
+19/12/2025 12:46:58 - Procedure or function App_Usp_InsertTournew has too many arguments specified. -  -  -  -  -  - Error
+19/12/2025 12:49:46 - Violation of PRIMARY KEY constraint 'PK__CheckPoi__604CEA30418407B5'. Cannot insert duplicate key in object 'dbo.CheckPointsMutipleImage'. The duplicate key value is (1996).
+The statement has been terminated. -  -  -  -  -  - Error

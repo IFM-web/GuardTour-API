@@ -10,7 +10,7 @@ namespace GuardTour_API.Models
         public DataSet Fill(string Query)
         {
             DataSet ds = new DataSet();
-
+            
             using (SqlConnection sqcon = new SqlConnection(ConnectDB.ConnectionString))
             {
                 try
