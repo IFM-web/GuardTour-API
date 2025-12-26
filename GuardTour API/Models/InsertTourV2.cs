@@ -17,11 +17,10 @@ namespace GuardTour_API.Models
         public string? ShiftId { get; set; } = string.Empty;
         public string? BeatId { get; set; } = string.Empty;
         public string? Remark { get; set; } = string.Empty;
-        public string? Image { get; set; } = "0";
-        public string? Image2 { get; set; } = "0";
+        public IFormFile? Image { get; set; }
+        public IFormFile? Image2 { get; set; }
         public string? Audio { get; set; } = "0";
-
-        public string[] CheckPointImages { get; set; } = null;
+        public IList<IFormFile> CheckPointImages { get; set; } = null;
         public int AlertFlg { get; set;}
     }
 }

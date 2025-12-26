@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Data;
+using System.Reflection;
 
 namespace GuardTour_API.Controllers
 {
@@ -51,20 +52,51 @@ namespace GuardTour_API.Controllers
         #region InsertTour
 
         [HttpPost]
+        [Consumes("multipart/form-data")]
         public IActionResult InsertTour([FromForm] InsertTourV2 obj)
         {
             try
             {
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
                 DataTable dtImages = new DataTable();
                 dtImages.Columns.Add("ImagePath", typeof(string));
 
-               
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
 
-                    foreach (string img in obj.CheckPointImages)
+
+                string SaveFile(IFormFile file)
+                {
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                    var path = Path.Combine(uploadPath, fileName);
+                    using var stream = new FileStream(path, FileMode.Create);
+                    file.CopyTo(stream);
+                    return "/uploads/" + fileName;
+                }
+
+
+                string? image1 = obj.Image != null ? SaveFile(obj.Image) : null;
+                string? image2 = obj.Image2 != null ? SaveFile(obj.Image2) : null;
+
+             
+
+
+
+                foreach (var photo in obj.CheckPointImages)
+                {
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(photo.FileName)}";
+                    var filePath = Path.Combine(uploadPath, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        dtImages.Rows.Add(img);
+                         photo.CopyTo(stream);
                     }
-               
+
+                    dtImages.Rows.Add("/uploads/" + fileName);
+                }
+
+
+
                 DataSet ds = new DataSet();
                 using (SqlConnection con = new SqlConnection(ConnectDB.ConnectionString))
                 {
@@ -91,15 +123,15 @@ namespace GuardTour_API.Controllers
                     cmd.Parameters.AddWithValue("@Longitude", obj.Longitude);
                     cmd.Parameters.AddWithValue("@LocationName", obj.LocationName);
                     cmd.Parameters.AddWithValue("@AlertFlg", obj.AlertFlg);
-                    cmd.Parameters.AddWithValue("@Image", obj.Image);
-                    cmd.Parameters.AddWithValue("@Image2", obj.Image2);
+                    cmd.Parameters.AddWithValue("@Image", image1);
+                    cmd.Parameters.AddWithValue("@Image2", image2);
 
                     SqlDataAdapter da = new SqlDataAdapter(cmd);
 
                     da.Fill(ds);
                 }
                 var obj1 = obj;
-                obj1.Image = "";
+                obj1.Image = null;
                 if (obj.AlertFlg == 0)
                 {
                     var jsondata = JsonConvert.SerializeObject(obj1);
@@ -172,7 +204,7 @@ namespace GuardTour_API.Controllers
 
                         if (msg == "Sent")
                         {
-                            obj.Image = "";
+                            obj.Image = null;
                             string datacome = JsonConvert.SerializeObject(obj);
                             _db.WriteLogFile("Apilog", datacome, "", "", "", "", "", "", "Email Sent SuccessFully");
 

@@ -1,0 +1,2 @@
+26/12/2025 17:16:05 - Error converting data type nvarchar to int. -  -  -  -  -  - Error
+26/12/2025 17:16:59 - Error converting data type nvarchar to int. -  -  -  -  -  - Error
